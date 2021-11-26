@@ -14,7 +14,10 @@ namespace Smartphone.Models
             optionsBuilder.UseLazyLoadingProxies();
         }
 
-        public DbSet<Smartphone.Models.Celular> Celular { get; set; }
- 
+        public DbSet<Smartphone.Models.Aplicacion> Aplicacion { get; set; }
+        public DbSet<Smartphone.Models.Instalacion> Instalacion { get; set; }
+        public DbSet<Smartphone.Models.Operario> Operario { get; set; }
+        public DbSet<Smartphone.Models.Sensor> Sensor { get; set; }
+        public DbSet<Smartphone.Models.Telefono> Telefono { get; set; }
     }
 }

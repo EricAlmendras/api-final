@@ -32,7 +32,7 @@ namespace Smartphone
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
 
-            services.AddDbContext<SmartphoneContext>(opt => opt.UseMySQL("server=localhost;database=inmob_newsan;user=root;password=almendras38"));
+            services.AddDbContext<SmartphoneContext>(opt => opt.UseMySQL("server=localhost;database=smartph_newsan;user=root;password=almendras38"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

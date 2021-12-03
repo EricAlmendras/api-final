@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Smartphone.Models;
 
 namespace Smartphone.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/1.0/[controller]")]
     [ApiController]
     public class AplicacionesController : ControllerBase
     {
@@ -25,20 +23,6 @@ namespace Smartphone.Controllers
         public async Task<ActionResult<IEnumerable<Aplicacion>>> GetAplicacion()
         {
             return await _context.Aplicacion.ToListAsync();
-        }
-
-        // GET: api/Aplicaciones/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Aplicacion>> GetAplicacion(int id)
-        {
-            var aplicacion = await _context.Aplicacion.FindAsync(id);
-
-            if (aplicacion == null)
-            {
-                return NotFound();
-            }
-
-            return aplicacion;
         }
 
         // PUT: api/Aplicaciones/5
@@ -73,7 +57,6 @@ namespace Smartphone.Controllers
         }
 
         // POST: api/Aplicaciones
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Aplicacion>> PostAplicacion(Aplicacion aplicacion)
         {
@@ -102,6 +85,27 @@ namespace Smartphone.Controllers
         private bool AplicacionExists(int id)
         {
             return _context.Aplicacion.Any(e => e.AplicacionId == id);
+        }
+
+        //apps instaladas en cada telefono con filtro de exitosa o no exitosa
+        // GET: api/aplicaciones/instalaciones?exitosa=false
+        [HttpGet("instalaciones")]
+        public dynamic Instalaciones(bool exitosa)
+        {
+            return _context.Aplicacion
+                   .Select(item => new
+                   {
+                       aplicacion = item.Nombre,
+                       telefonos = item.Instalaciones.Where(itemInstalacion => itemInstalacion.Exitosa == exitosa)
+                       .Select(itemInstalacion => new
+                       {
+                           itemInstalacion.Exitosa,
+                           itemInstalacion.Telefono.Marca,
+                           itemInstalacion.Telefono.Modelo,
+                           itemInstalacion.Telefono.Precio,
+                       })
+                   })
+                   .ToList();
         }
     }
 }

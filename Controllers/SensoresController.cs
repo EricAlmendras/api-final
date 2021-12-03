@@ -9,7 +9,7 @@ using Smartphone.Models;
 
 namespace Smartphone.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/1.0/[controller]")]
     [ApiController]
     public class SensoresController : ControllerBase
     {

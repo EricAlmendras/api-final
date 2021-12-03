@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Smartphone.Models;
 
 namespace Smartphone.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/1.0/[controller]")]
     [ApiController]
     public class TelefonosController : ControllerBase
     {
@@ -19,26 +16,44 @@ namespace Smartphone.Controllers
         {
             _context = context;
         }
-
+        //telefonos y sus sensores
         // GET: api/Telefonos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Telefono>>> GetTelefono()
+        public dynamic GetTelefono()
         {
-            return await _context.Telefono.ToListAsync();
+            return _context.Telefono
+                    .Select(item => new
+                    {
+                        item.Marca,
+                        item.Modelo,
+                        item.Precio,
+                        Sensores = item.Sensores.Select(itemSensor => new
+                        {
+                            itemSensor.nombre
+                        }
+                            )
+                    })
+                    .ToList();
         }
-
+        //para un telf particular, data de apps instaladas y que operario lo hizo
         // GET: api/Telefonos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Telefono>> GetTelefono(int id)
+        public dynamic GetTelefono(int id)
         {
-            var telefono = await _context.Telefono.FindAsync(id);
-
-            if (telefono == null)
-            {
-                return NotFound();
-            }
-
-            return telefono;
+            return _context.Telefono
+                   .Where(item => item.TelefonoId == id)
+                   .Select(item => new
+                   {
+                       item.Marca,
+                       item.Modelo,
+                       aplicaciones = item.Instalaciones
+                       .Select(itemInstalacion => new
+                       {
+                           AppInstalada = itemInstalacion.Aplicacion.Nombre,
+                           OperarioInstalador = itemInstalacion.Operario.nombre
+                       })
+                      
+                   });
         }
 
         // PUT: api/Telefonos/5
@@ -102,6 +117,28 @@ namespace Smartphone.Controllers
         private bool TelefonoExists(int id)
         {
             return _context.Telefono.Any(e => e.TelefonoId == id);
+        }
+
+        //filtra la lista de teléfonos por sensor o app instalada.
+        //// GET: api/telefonos/buscar?sensor=Biometrico&&aplicacion=Instagram
+        [HttpGet("buscar")]
+        public dynamic Buscar(string sensor="Giroscopio",string aplicacion="Facebook")
+        {
+           return _context.Instalacion.Where(item => item.Aplicacion.Nombre == aplicacion)
+                .Select(item => new
+                {
+                    Aplicacion = item.Aplicacion.Nombre,
+                    Sensor = item.Telefono.Sensores.Where(item => item.nombre == sensor)
+                                                .Select(item => new
+                                                {
+                                                    item.nombre,
+                                                    Telefonos = item.Telefonos.Select(item => new
+                                                    {
+                                                        item.Marca,
+                                                        item.Modelo
+                                                    })
+                                                })
+                }).ToList();
         }
     }
 }

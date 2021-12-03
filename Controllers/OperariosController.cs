@@ -9,7 +9,7 @@ using Smartphone.Models;
 
 namespace Smartphone.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/1.0/[controller]")]
     [ApiController]
     public class OperariosController : ControllerBase
     {
@@ -25,20 +25,6 @@ namespace Smartphone.Controllers
         public async Task<ActionResult<IEnumerable<Operario>>> GetOperario()
         {
             return await _context.Operario.ToListAsync();
-        }
-
-        // GET: api/Operarios/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Operario>> GetOperario(int id)
-        {
-            var operario = await _context.Operario.FindAsync(id);
-
-            if (operario == null)
-            {
-                return NotFound();
-            }
-
-            return operario;
         }
 
         // PUT: api/Operarios/5

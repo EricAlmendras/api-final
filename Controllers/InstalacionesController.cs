@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Smartphone.Models;
 
 namespace Smartphone.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/1.0/[controller]")]
     [ApiController]
     public class InstalacionesController : ControllerBase
     {
@@ -18,27 +15,6 @@ namespace Smartphone.Controllers
         public InstalacionesController(SmartphoneContext context)
         {
             _context = context;
-        }
-
-        // GET: api/Instalaciones
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Instalacion>>> GetInstalacion()
-        {
-            return await _context.Instalacion.ToListAsync();
-        }
-
-        // GET: api/Instalaciones/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Instalacion>> GetInstalacion(int id)
-        {
-            var instalacion = await _context.Instalacion.FindAsync(id);
-
-            if (instalacion == null)
-            {
-                return NotFound();
-            }
-
-            return instalacion;
         }
 
         // PUT: api/Instalaciones/5
@@ -102,6 +78,6 @@ namespace Smartphone.Controllers
         private bool InstalacionExists(int id)
         {
             return _context.Instalacion.Any(e => e.InstalacionId == id);
-        }
+        }  
     }
 }

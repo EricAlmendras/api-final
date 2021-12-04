@@ -87,7 +87,7 @@ namespace Smartphone.Controllers
             return NoContent();
         }
 
-        // POST: api/Telefonos
+        // POST: api/1.0/Telefonos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Telefono>> PostTelefono(Telefono telefono)
@@ -122,23 +122,45 @@ namespace Smartphone.Controllers
         //filtra la lista de teléfonos por sensor o app instalada.
         //// GET: api/telefonos/buscar?sensor=Biometrico&&aplicacion=Instagram
         [HttpGet("buscar")]
-        public dynamic Buscar(string sensor="Giroscopio",string aplicacion="Facebook")
+        public dynamic Buscar(string sensor="",string aplicacion="")
         {
-           return _context.Instalacion.Where(item => item.Aplicacion.Nombre == aplicacion)
-                .Select(item => new
+            //si filtro por aplicacion
+            if (sensor == "") { 
+                return _context.Aplicacion.Where(item => item.Nombre == aplicacion)
+                       .Select(item => new
+                       {
+                           aplicacion = item.Nombre,
+                           telefonos = item.Instalaciones
+                           .Select(itemInstalacion => new
+                           {
+                               itemInstalacion.Telefono.Marca,
+                               itemInstalacion.Telefono.Modelo,
+                               itemInstalacion.Telefono.Precio,
+                           })
+                       })
+                       .ToList();
+            }
+            else
+            {
+                //si filtro por sensor
+                if (aplicacion == "")
                 {
-                    Aplicacion = item.Aplicacion.Nombre,
-                    Sensor = item.Telefono.Sensores.Where(item => item.nombre == sensor)
-                                                .Select(item => new
-                                                {
-                                                    item.nombre,
-                                                    Telefonos = item.Telefonos.Select(item => new
-                                                    {
-                                                        item.Marca,
-                                                        item.Modelo
-                                                    })
-                                                })
-                }).ToList();
+                    return _context.Sensor.Where(item => item.nombre == sensor)
+                    .Select(item => new
+                    {
+                        item.nombre,
+                        Telefonos = item.Telefonos.Select(itemTelefono => new
+                        {
+                            itemTelefono.Marca,
+                            itemTelefono.Modelo
+                        }
+                            )
+                    })
+                    .ToList();
+                }
+            }
+
+            return "No se puede filtrar por Sensor y Aplicacion a la vez";
         }
     }
 }
